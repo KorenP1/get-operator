@@ -27,5 +27,5 @@ FOR SUMMARY JUST RUN get-operator.sh AS ROOT
 
 \
 ! GOOD LUCK \
-! THANK YOU :)
+! THANK YOU :) \
 KorenP

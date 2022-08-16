@@ -1,39 +1,39 @@
-echo "redhat-operator-index / certified-operator-index / community-operator-index"
-operator_type="community-operator-index"
-echo "operator_type: $operator_type"
+GREEN='\033[1;32m'
+NC='\033[0m'
+
+
+echo -e "\nredhat-operator-index / certified-operator-index / community-operator-index"
+read operator_type
+echo -e "${GREEN}operator_type -> $operator_type${NC}\n"
 
 echo "Enter openshift major version for example v4.9"
-ocp_ver="v4.9"
-echo "ocp_ver: $ocp_ver"
+read ocp_ver
+echo -e "${GREEN}ocp_ver -> $ocp_ver${NC}\n"
 
-echo "Enter name of operator"
+echo "Enter operator name"
 read operator_tmp_name
-echo "operator_tmp_name: $operator_tmp_name"
+echo -e "${GREEN}operator_tmp_name -> $operator_tmp_name${NC}\n"
+
 
 mkdir data
 [ ! -f /usr/bin/podman ] && yum install -y podman
 if [ ! -f /usr/bin/opm ]
 then
 	wget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/opm-linux.tar.gz
-	tar -zxvf opm-linux.tar.gz
+	tar -zxvf opm-linux.tar.gz -C /usr/bin
 	rm -f opm-linux.tar.gz
-	mv opm /usr/bin/opm
 fi
 if [ ! -f /usr/bin/oc ]
 then
         wget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/openshift-client-linux.tar.gz
-        tar -zxvf openshift-client-linux.tar.gz
-        rm -f openshift-client-linux.tar.gz
-        mv oc /usr/bin/oc
-	mv kubectl /usr/bin/kubectl
-	rm -f README.md
+        tar -zxvf openshift-client-linux.tar.gz -C /usr/bin
+        rm -f openshift-client-linux.tar.gz /usr/bin/README.md
 fi
 if [ ! -f /usr/bin/grpcurl ]
 then
         wget https://github.com/fullstorydev/grpcurl/releases/download/v1.8.6/grpcurl_1.8.6_linux_x86_64.tar.gz
-        tar -zxvf grpcurl_1.8.6_linux_x86_64.tar.gz
-        rm -f grpcurl_1.8.6_linux_x86_64.tar.gz
-        mv grpcurl /usr/bin/grpcurl
+        tar -zxvf grpcurl_1.8.6_linux_x86_64.tar.gz -C /usr/bin
+        rm -f grpcurl_1.8.6_linux_x86_64.tar.gz /usr/bin/LICENSE
 fi
 
 
@@ -52,10 +52,13 @@ podman run -d \
 
 sleep 5
 
+
 grpcurl -plaintext localhost:50051 api.Registry/ListPackages > packages.out
 cat packages.out
 operator_name=`grep $operator_tmp_name packages.out | awk '{print $2}' | sed 's/\"//g'`
-echo "OPERATOR FOUND: $operator_name"
+rm -f packages.out
+echo -e "${GREEN}OPERATOR FOUND -> $operator_name${NC}\n"
+
 
 opm index prune -f registry.redhat.io/redhat/$operator_type:$ocp_ver -p $operator_name -t localhost:5000/index-image/$operator_name:$ocp_ver
 
@@ -69,4 +72,3 @@ podman rm -f local-registry
 
 mv manifest* data
 mv data $operator_name
-rm -rf index* data packages.out LICENSE

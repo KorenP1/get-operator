@@ -8,14 +8,14 @@ Get OpenShift Operators on unrestriced network machine
 
 \
 podman login to the registries with the next commands:
-  1. podman login registry.redhat.io \
-  2. podman login quay.io \
+  1. podman login registry.redhat.io
+  2. podman login quay.io
   3. podman login registry.connect.redhat.com
 
 \
 There are 3 environment variables:
-  1. operator_type ( redhat-operator-index / certified-operator-index / community-operator-index ) \
-  2. ocp_ver (Major OpenShift version) \
+  1. operator_type ( redhat-operator-index / certified-operator-index / community-operator-index )
+  2. ocp_ver (Major OpenShift version)
   3. operator_name (The name of the wanted operator)
 
 \
